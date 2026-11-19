@@ -9,7 +9,7 @@ const WEEKDAYS = ["Да", "Мя", "Лх", "Пү", "Ба", "Бя", "Ня"];
 
 /** Share of the day's arrivals that were resolved (0–1). */
 function resolvedShare(day: DayStat) {
-  const done = day.staff + day.ai;
+  const done = day.staff + day.ai + day.chatbot;
   if (day.arrived === 0) return done > 0 ? 1 : 0;
   return Math.min(done / day.arrived, 1); // can exceed 1 when older requests are closed
 }
@@ -72,7 +72,7 @@ export function DayCalendar({ month }: { month: Dashboard["month"] }) {
           <span>
             {shown === month.today ? "Өнөөдөр" : label(shown)}:{" "}
             {stats ? (
-              <><span className="font-bold text-slate-700">{stats.staff + stats.ai}/{stats.arrived}</span> шийдвэрлэсэн</>
+              <><span className="font-bold text-slate-700">{stats.staff + stats.ai + stats.chatbot}/{stats.arrived}</span> шийдвэрлэсэн</>
             ) : (
               "хүсэлт ирээгүй"
             )}
@@ -111,7 +111,7 @@ function DayCell({ day, stats, isFuture, isSelected, isHovered, ariaLabel, onHov
       type="button"
       disabled={isFuture}
       aria-pressed={isSelected}
-      aria-label={stats ? `${ariaLabel}: ${stats.staff + stats.ai}/${stats.arrived} шийдвэрлэсэн` : `${ariaLabel}: хүсэлт ирээгүй`}
+      aria-label={stats ? `${ariaLabel}: ${stats.staff + stats.ai + stats.chatbot}/${stats.arrived} шийдвэрлэсэн` : `${ariaLabel}: хүсэлт ирээгүй`}
       onMouseEnter={onHover}
       onFocus={onHover}
       onClick={onSelect}

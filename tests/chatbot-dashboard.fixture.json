@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-11-19T12:00:00+08:00",
+  "period": { "key": "7d", "from": "2026-11-13T00:00:00+08:00", "to": "2026-11-19T12:00:00+08:00", "tz": "Asia/Ulaanbaatar" },
+  "totals": { "arrived": 12, "resolved": 7, "rejected": 3, "cancelled": 1, "open": 4, "overdue_open": 2, "closed_late": 1 },
+  "by_type": [{ "number": "1.1", "title": "Шилжин ирсэн оюутны дүн дүйцүүлэх", "arrived": 5, "resolved": 3, "rejected": 1, "open": 1 }],
+  "rejection_reasons": [
+    { "code": "debt", "label": "Төлбөрийн өртэй", "count": 2 },
+    { "code": "staff", "label": "Ажилтан татгалзсан", "count": 1 }
+  ],
+  "overdue": {
+    "open": [{ "request_id": 42, "number": "13", "title": "Чөлөө авах", "office": "Сургалтын алба", "due": "2026-11-16T17:00:00+08:00", "days_late": 3 }],
+    "by_office": [{ "office": "Сургалтын алба", "open_overdue": 2, "closed_late": 1 }]
+  },
+  "decision_time": { "avg_hours": 26.5, "median_hours": 20.0, "count": 10 },
+  "decided_by": { "auto": 6, "person": 4 },
+  "daily": [
+    { "date": "2026-11-18", "arrived": 4, "resolved": 2, "rejected": 1 },
+    { "date": "2026-11-19", "arrived": 0, "resolved": 0, "rejected": 0 }
+  ],
+  "today": { "arrived": 0, "resolved": 0, "rejected": 0, "open": 4 }
+}

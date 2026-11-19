@@ -6,6 +6,8 @@ import { getActivities, getAllTasks, getProjects, type KaneoActivity, type Kaneo
 
 /** A student request, simplified from a Kaneo task. */
 export type StudentRequest = {
+  /** Kaneo project name. */
+  project: string;
   number: number | null;
   type: string;
   outcome: "resolved" | "rejected" | "open";
@@ -48,7 +50,7 @@ function lastClose(activity: KaneoActivity[]) {
     .at(-1);
 }
 
-function toStudentRequest(task: KaneoTask, activity: KaneoActivity[]): StudentRequest {
+function toStudentRequest(project: string, task: KaneoTask, activity: KaneoActivity[]): StudentRequest {
   const outcome = task.status === "done" ? "resolved" : task.status === "rejected" ? "rejected" : "open";
   const statusClose = outcome === "open" ? undefined : lastClose(activity);
   // Some integrations (e.g. the СЭЗИС app) create tasks directly in a final column, with no
@@ -56,6 +58,7 @@ function toStudentRequest(task: KaneoTask, activity: KaneoActivity[]): StudentRe
   const close = statusClose ?? (outcome === "open" ? undefined : activity.find((a) => a.type === "created"));
 
   return {
+    project,
     number: task.number,
     type: requestType(task) ?? "Тодорхойгүй",
     outcome,
@@ -95,11 +98,11 @@ export async function getStudentRequests() {
       ),
     })),
   );
-  const tasks = perProject.flatMap((p) => p.tasks);
-  const activities = await getActivities(tasks.map((t) => t.id));
+  const tasks = perProject.flatMap((p) => p.tasks.map((task) => ({ project: p.name, task })));
+  const activities = await getActivities(tasks.map((t) => t.task.id));
 
   return {
-    requests: tasks.map((task, i) => toStudentRequest(task, activities[i])),
+    requests: tasks.map(({ project, task }, i) => toStudentRequest(project, task, activities[i])),
     fetchedAt: new Date(),
     sources: perProject.map((p) => ({ name: p.name, count: p.tasks.length })),
   };

@@ -1,4 +1,4 @@
-import { getDashboard, PERIODS, type PeriodKey } from "@/lib/dashboard";
+import { getDashboard, PERIODS, SOURCES, type PeriodKey, type SourceKey } from "@/lib/dashboard";
 import { Header } from "@/components/Header";
 import { KpiGrid } from "@/components/KpiGrid";
 import { WeeklyChart } from "@/components/WeeklyChart";
@@ -9,8 +9,8 @@ import { Breakdown } from "@/components/Breakdown";
 const ROW = "grid min-h-0 grid-cols-[31fr_23fr_23fr_23fr] gap-1 [&>*]:min-w-0";
 
 export default async function Page({ searchParams }: PageProps<"/">) {
-  const { period } = await searchParams;
-  const data = await getDashboard(isPeriod(period) ? period : "1m");
+  const { period, source } = await searchParams;
+  const data = await getDashboard(isPeriod(period) ? period : "1m", isSource(source) ? source : "all");
 
   return (
     <main className="relative h-screen min-h-190 min-w-7xl overflow-hidden bg-[linear-gradient(180deg,#1A2C6E_0%,#0E1E52_38%,#0A1740_60%,#24398A_78%,#5C7BC8_92%,#AFC2E9_100%)] font-sans">
@@ -22,7 +22,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         <section className={`flex-1 ${ROW}`}>
           <KpiGrid kpi={data.kpi} />
           <div className="col-span-3">
-            <WeeklyChart weekly={data.weekly} range={data.range} />
+            <WeeklyChart weekly={data.weekly} range={data.range} decidedBy={data.decidedBy} />
           </div>
         </section>
         <section className={`flex-[1.12] ${ROW}`}>
@@ -38,6 +38,10 @@ export default async function Page({ searchParams }: PageProps<"/">) {
 
 function isPeriod(value: unknown): value is PeriodKey {
   return typeof value === "string" && value in PERIODS;
+}
+
+function isSource(value: unknown): value is SourceKey {
+  return typeof value === "string" && value in SOURCES;
 }
 
 function Background() {

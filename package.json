@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "kaneo:types": "openapi-typescript https://api.kaneo.ufe.edu.mn/api/openapi -o src/lib/kaneo/schema.d.ts"
+    "kaneo:types": "openapi-typescript https://api.kaneo.ufe.edu.mn/api/openapi -o src/lib/kaneo/schema.d.ts",
+    "test": "node --test --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON \"tests/*.test.mjs\""
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",

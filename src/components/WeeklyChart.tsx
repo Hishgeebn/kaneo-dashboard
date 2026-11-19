@@ -6,14 +6,17 @@ import { Bar, BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis } from "recha
 import type { Dashboard } from "@/lib/dashboard";
 import { Card } from "./Card";
 
-type Props = { weekly: Dashboard["weekly"]; range: Dashboard["range"] };
+type Props = { weekly: Dashboard["weekly"]; range: Dashboard["range"]; decidedBy: Dashboard["decidedBy"] };
 
 const STAFF = "#0B63F6";
 const AI = "#8FBAFB";
+/** Chatbot resolutions; its API counts who decided only for the whole period (`decidedBy`). */
+export const CHATBOT_COLOR = "#2BB3A3";
 
-export function WeeklyChart({ weekly, range }: Props) {
+export function WeeklyChart({ weekly, range, decidedBy }: Props) {
   const [hovered, setHovered] = useState<number | null>(null);
-  const data = weekly.map((w) => ({ ...w, total: w.ajiltan + w.azaaAi }));
+  const data = weekly.map((w) => ({ ...w, total: w.ajiltan + w.azaaAi + w.chatbot }));
+  const decided = decidedBy ? decidedBy.auto + decidedBy.person : 0;
   const total = data.reduce((sum, w) => sum + w.total, 0);
   const dim = (i: number) => hovered !== null && hovered !== i;
 
@@ -24,6 +27,7 @@ export function WeeklyChart({ weekly, range }: Props) {
         <div className="flex items-center gap-4">
           <Legend color={STAFF} label="Ажилтан" />
           <Legend color={AI} label="Azaa AI" />
+          {decidedBy && <Legend color={CHATBOT_COLOR} label="Чатбот" />}
         </div>
       </div>
 
@@ -72,6 +76,9 @@ export function WeeklyChart({ weekly, range }: Props) {
           <Bar dataKey="azaaAi" stackId="resolved" isAnimationActive={false}>
             {data.map((_, i) => <Cell key={i} fill="url(#aiGradient)" opacity={dim(i) ? 0.25 : 1} />)}
           </Bar>
+          <Bar dataKey="chatbot" stackId="resolved" isAnimationActive={false}>
+            {data.map((_, i) => <Cell key={i} fill={CHATBOT_COLOR} opacity={dim(i) ? 0.25 : 1} />)}
+          </Bar>
         </BarChart>
       </div>
 
@@ -79,6 +86,14 @@ export function WeeklyChart({ weekly, range }: Props) {
         Нийт <span className="font-bold text-slate-700">{total}</span> хүсэлт
         <span className="mx-1.5">•</span>
         {range.from} – {range.to}
+        {decidedBy && (
+          <>
+            <span className="mx-1.5">•</span>
+            Чатботын шийдвэр: Azaa AI <span className="font-bold text-slate-700">{decidedBy.auto}</span>
+            {decided > 0 && ` (${Math.round((decidedBy.auto / decided) * 100)}%)`}, ажилтан{" "}
+            <span className="font-bold text-slate-700">{decidedBy.person}</span>
+          </>
+        )}
       </p>
     </Card>
   );
@@ -103,6 +118,9 @@ function WeekTooltip({ active, payload }: TooltipProps) {
       <span className="font-bold text-slate-800">{week.total}</span> хүсэлт
       <span className="mx-1 text-slate-300">|</span>Ажилтан: <span className="font-bold" style={{ color: STAFF }}>{week.ajiltan}</span>
       <span className="mx-1 text-slate-300">|</span>Azaa AI: <span className="font-bold" style={{ color: AI }}>{week.azaaAi}</span>
+      {week.chatbot > 0 && (
+        <><span className="mx-1 text-slate-300">|</span>Чатбот: <span className="font-bold" style={{ color: CHATBOT_COLOR }}>{week.chatbot}</span></>
+      )}
     </div>
   );
 }

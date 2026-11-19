@@ -1,17 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import clsx from "clsx";
 import { Cell, Pie, PieChart } from "recharts";
+import { CHATBOT_COLOR } from "./WeeklyChart";
 
-type Props = { arrived: number; staff: number; ai: number };
+/** `chatbot`: resolved chatbot requests (its API does not split them by who decided); null hides the slice. */
+type Props = { arrived: number; staff: number; ai: number; chatbot: number | null };
 
-export function TodayPie({ arrived, staff, ai }: Props) {
+export function TodayPie({ arrived, staff, ai, chatbot }: Props) {
   const [hovered, setHovered] = useState<number | null>(null);
   const slices = [
     { label: "Ажилтан", value: staff, color: "#0B63F6" },
     { label: "Azaa AI", value: ai, color: "#8FBAFB" },
+    ...(chatbot === null ? [] : [{ label: "Чатбот", value: chatbot, color: CHATBOT_COLOR }]),
     // Requests resolved today may have arrived earlier, so this can't go below 0.
-    { label: "Шийдвэрлээгүй", value: Math.max(arrived - staff - ai, 0), color: "#DCE3EC" },
+    { label: "Шийдвэрлээгүй", value: Math.max(arrived - staff - ai - (chatbot ?? 0), 0), color: "#DCE3EC" },
   ];
   const isEmpty = slices.every((s) => s.value === 0);
   const dim = (i: number) => hovered !== null && hovered !== i;
@@ -37,7 +41,7 @@ export function TodayPie({ arrived, staff, ai }: Props) {
         </Pie>
       </PieChart>
 
-      <ul className="flex min-w-[136px] flex-col gap-1.5">
+      <ul className={clsx("flex min-w-[136px] flex-col", chatbot === null ? "gap-1.5" : "gap-0.5")}>
         {slices.map((s, i) => (
           <li
             key={s.label}
