@@ -12,7 +12,7 @@ export function Header({ data }: { data: Dashboard }) {
   return (
     <header className="flex items-stretch justify-between gap-6">
       <div className="pt-1">
-        <h1 className="text-[26px] font-bold leading-tight tracking-tight text-white">
+        <h1 className="text-[28px] font-bold leading-tight tracking-tight text-white">
           Сургалтын албаны хүсэлтийн тойм
         </h1>
         <div className="mt-3.5 flex items-center gap-2">
@@ -75,7 +75,7 @@ function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div>
       <p className="text-sm font-medium text-sky-100/90">{label}</p>
-      <p className="mt-1 text-[32px] font-bold leading-none text-white">{value}</p>
+      <p className="mt-1 text-[35px] font-bold leading-none text-white">{value}</p>
     </div>
   );
 }

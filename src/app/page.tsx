@@ -4,6 +4,7 @@ import { KpiGrid } from "@/components/KpiGrid";
 import { WeeklyChart } from "@/components/WeeklyChart";
 import { DayCalendar } from "@/components/DayCalendar";
 import { Breakdown } from "@/components/Breakdown";
+import { OpenRequests } from "@/components/OpenRequests";
 
 // Left column is 31% wide, the right block (col-span-3) takes the rest.
 const ROW = "grid min-h-0 grid-cols-[31fr_23fr_23fr_23fr] gap-1 [&>*]:min-w-0";
@@ -21,9 +22,10 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         </div>
         <section className={`flex-1 ${ROW}`}>
           <KpiGrid kpi={data.kpi} />
-          <div className="col-span-3">
+          <div className="col-span-2">
             <WeeklyChart weekly={data.weekly} range={data.range} decidedBy={data.decidedBy} />
           </div>
+          <OpenRequests items={data.open} />
         </section>
         <section className={`flex-[1.12] ${ROW}`}>
           <DayCalendar month={data.month} />

@@ -43,7 +43,7 @@ type Props = {
 function RankedList({ title, total, items, dot, text, note, children }: Props) {
   return (
     <div className="flex min-h-0 min-w-0 flex-col rounded-2xl bg-slate-50/80 p-3.5 ring-1 ring-slate-100">
-      <div className="flex items-start justify-between gap-2 border-b border-slate-200/70 pb-2 text-[clamp(14px,1.1vw,16px)]">
+      <div className="flex items-start justify-between gap-2 border-b border-slate-200/70 pb-2 text-[clamp(15px,1.2vw,18px)]">
         <span className="flex min-w-0 items-start gap-2">
           <span className={`mt-[0.45em] size-2 shrink-0 rounded-full ${dot}`} />
           <h3 className="font-semibold leading-tight text-balance text-slate-800">{title}</h3>

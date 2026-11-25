@@ -21,9 +21,13 @@ export async function getProjects(workspaceId: string) {
   return data;
 }
 
-/** Every task in a project, across all board columns and pages. */
-export async function getAllTasks(projectId: string): Promise<KaneoTask[]> {
+/**
+ * Every task in a project, across all board columns and pages,
+ * plus the board's column names by status id ("to-do" → "Ирсэн").
+ */
+export async function getAllTasks(projectId: string) {
   const tasks: KaneoTask[] = [];
+  const columns: Record<string, string> = {};
   for (let page = 1, totalPages = 1; page <= totalPages; page++) {
     const { data, error } = await kaneo.GET("/task/tasks/{projectId}", {
       // Always pass `limit`: without it Kaneo uses a page size of 50 and pages overlap.
@@ -33,10 +37,11 @@ export async function getAllTasks(projectId: string): Promise<KaneoTask[]> {
 
     totalPages = data.pagination.totalPages;
     const board = data.data;
+    for (const c of board.columns) columns[c.id] = c.name;
     tasks.push(...board.columns.flatMap((c) => c.tasks), ...board.plannedTasks, ...board.archivedTasks);
   }
   // A task can appear in more than one list; keep one copy of each.
-  return [...new Map(tasks.map((t) => [t.id, t])).values()];
+  return { tasks: [...new Map(tasks.map((t) => [t.id, t])).values()], columns };
 }
 
 const limit = pLimit(8); // at most 8 parallel requests to Kaneo

@@ -41,7 +41,7 @@ export function WeeklyChart({ weekly, range, decidedBy }: Props) {
             className={clsx("min-w-0 cursor-default border-l border-slate-100 pb-2 pl-3 transition-colors first:border-l-0", dim(i) ? "text-slate-300" : "text-slate-800")}
           >
             <p className={clsx("truncate text-xs font-medium", !dim(i) && "text-slate-500")}>{w.week}</p>
-            <p className="text-[21px] font-bold leading-tight">{w.total}</p>
+            <p className="text-[23px] font-bold leading-tight">{w.total}</p>
           </div>
         ))}
       </div>
@@ -68,7 +68,7 @@ export function WeeklyChart({ weekly, range, decidedBy }: Props) {
           </defs>
           <CartesianGrid vertical={false} stroke="rgba(100,116,139,0.08)" />
           <XAxis dataKey="week" hide />
-          <YAxis width={40} allowDecimals={false} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#94a3b8" }} />
+          <YAxis width={40} allowDecimals={false} axisLine={false} tickLine={false} tick={{ fontSize: 13, fill: "#94a3b8" }} />
           <Tooltip cursor={{ fill: "rgba(11,99,246,0.07)" }} content={<WeekTooltip />} isAnimationActive={false} />
           <Bar dataKey="ajiltan" stackId="resolved" isAnimationActive={false}>
             {data.map((_, i) => <Cell key={i} fill="url(#staffGradient)" opacity={dim(i) ? 0.25 : 1} />)}

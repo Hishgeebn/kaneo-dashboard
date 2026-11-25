@@ -9,6 +9,11 @@ export type StudentRequest = {
   /** Kaneo project name. */
   project: string;
   number: number | null;
+  /** The task title, e.g. "№8 Төлбөрийн тодорхойлолт — Овог Нэр (B24FM1234)". */
+  title: string;
+  /** Board column name, e.g. "Шалгаж байна". */
+  status: string;
+  assignee: string | null;
   type: string;
   outcome: "resolved" | "rejected" | "open";
   rejectReasons: string[];
@@ -50,7 +55,12 @@ function lastClose(activity: KaneoActivity[]) {
     .at(-1);
 }
 
-function toStudentRequest(project: string, task: KaneoTask, activity: KaneoActivity[]): StudentRequest {
+function toStudentRequest(
+  project: string,
+  task: KaneoTask,
+  activity: KaneoActivity[],
+  columns: Record<string, string>,
+): StudentRequest {
   const outcome = task.status === "done" ? "resolved" : task.status === "rejected" ? "rejected" : "open";
   const statusClose = outcome === "open" ? undefined : lastClose(activity);
   // Some integrations (e.g. the СЭЗИС app) create tasks directly in a final column, with no
@@ -60,6 +70,9 @@ function toStudentRequest(project: string, task: KaneoTask, activity: KaneoActiv
   return {
     project,
     number: task.number,
+    title: task.title,
+    status: columns[task.status] ?? task.status,
+    assignee: task.assigneeName ?? null,
     type: requestType(task) ?? "Тодорхойгүй",
     outcome,
     rejectReasons: task.labels.filter((l) => l.color === REJECT_LABEL_COLOR).map((l) => l.name),
@@ -88,21 +101,25 @@ export async function getStudentRequests() {
     (p) => !env.excludeProjects.some((word) => p.name.toLowerCase().includes(word)),
   );
   const perProject = await Promise.all(
-    projects.map(async (p) => ({
-      name: p.name,
-      tasks: (await getAllTasks(p.id)).filter(
-        (t) =>
-          t.status !== "archived" &&
-          requestType(t) !== null && // tasks without a request type are internal work, not student requests
-          !isTestSubmission(t),
-      ),
-    })),
+    projects.map(async (p) => {
+      const board = await getAllTasks(p.id);
+      return {
+        name: p.name,
+        columns: board.columns,
+        tasks: board.tasks.filter(
+          (t) =>
+            t.status !== "archived" &&
+            requestType(t) !== null && // tasks without a request type are internal work, not student requests
+            !isTestSubmission(t),
+        ),
+      };
+    }),
   );
-  const tasks = perProject.flatMap((p) => p.tasks.map((task) => ({ project: p.name, task })));
+  const tasks = perProject.flatMap((p) => p.tasks.map((task) => ({ project: p.name, columns: p.columns, task })));
   const activities = await getActivities(tasks.map((t) => t.task.id));
 
   return {
-    requests: tasks.map(({ project, task }, i) => toStudentRequest(project, task, activities[i])),
+    requests: tasks.map(({ project, task, columns }, i) => toStudentRequest(project, task, activities[i], columns)),
     fetchedAt: new Date(),
     sources: perProject.map((p) => ({ name: p.name, count: p.tasks.length })),
   };

@@ -1,6 +1,7 @@
 import "server-only";
 import { tz } from "@date-fns/tz";
 import {
+  differenceInCalendarDays,
   differenceInMinutes,
   eachDayOfInterval,
   eachWeekOfInterval,
@@ -116,7 +117,41 @@ export async function getDashboard(period: PeriodKey, source: SourceKey) {
           daysLate: o.days_late,
         })),
     },
+    /** Every Kaneo request not yet resolved/rejected, whatever the period: the current backlog. */
+    open: openRequests(shown, now),
   };
+}
+
+export type OpenRequest = Dashboard["open"][number];
+
+/** Requests still waiting, most urgent first (overdue, then nearest due date). */
+function openRequests(all: StudentRequest[], now: Date) {
+  return all
+    .filter((r) => r.outcome === "open")
+    .sort((a, b) => (a.dueAt?.getTime() ?? Infinity) - (b.dueAt?.getTime() ?? Infinity))
+    .map((r) => {
+      const daysLeft = r.dueAt ? differenceInCalendarDays(r.dueAt, now, ub) : null;
+      return {
+        key: `${r.number}-${r.createdAt.getTime()}`,
+        number: r.number,
+        type: r.type,
+        // The title is "№8 <type> — <student>"; the student part is what's new here.
+        who: r.title.split(" — ").slice(1).join(" — ") || r.title,
+        status: r.status,
+        assignee: r.assignee,
+        overdue: isOverdue(r, now),
+        due: r.dueAt ? format(r.dueAt, "MM/dd", ub) : null,
+        dueText:
+          daysLeft === null
+            ? "Хугацаагүй"
+            : isOverdue(r, now)
+              ? `${Math.max(1, -daysLeft)} хоног хэтэрсэн`
+              : daysLeft === 0
+                ? "Өнөөдөр дуусна"
+                : `${daysLeft} хоног үлдсэн`,
+        waiting: `${differenceInCalendarDays(now, r.createdAt, ub)} хоног`,
+      };
+    });
 }
 
 /** Overdue = still open past its due date, or closed after it. */

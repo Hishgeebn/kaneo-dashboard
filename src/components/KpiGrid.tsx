@@ -29,7 +29,7 @@ export function KpiGrid({ kpi }: { kpi: Dashboard["kpi"] }) {
     },
     {
       label: "Дундаж хугацаа",
-      value: <span className="text-[22px]">{kpi.avgDuration ?? "—"}</span>,
+      value: <span className="text-[24px]">{kpi.avgDuration ?? "—"}</span>,
       color: "bg-blue-50 text-[#0B63F6]",
       icon: icon(<><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></>),
     },
@@ -43,7 +43,7 @@ export function KpiGrid({ kpi }: { kpi: Dashboard["kpi"] }) {
             <p className="text-sm font-medium text-slate-500">{item.label}</p>
             <span className={`flex size-9 shrink-0 items-center justify-center rounded-full ${item.color}`}>{item.icon}</span>
           </div>
-          <p className="text-[26px] font-bold leading-none text-slate-800">{item.value}</p>
+          <p className="text-[28px] font-bold leading-none text-slate-800">{item.value}</p>
         </Card>
       ))}
     </div>
