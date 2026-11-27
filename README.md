@@ -95,7 +95,7 @@ submissions matching `KANEO_TEST_MARKERS`.
 **Azaa AI:** Kaneo has no field for it. Put the Kaneo user id(s) the AI closes requests with in
 `KANEO_AI_USER_IDS`; until then every resolution counts as "Ажилтан".
 
-Kaneo data is cached for `KANEO_REVALIDATE_SECONDS` (default 60 s), chatbot data for 30 s. The header
+Kaneo data is cached for 60 s and chatbot data for 30 s, and open pages reload every 5 minutes; all timers live in `src/lib/timing.ts`. The header
 shows when each was last loaded and from which projects; the **Шинэчлэх** button reloads both right away.
 
 ## Realtime («Шууд»)

@@ -1,7 +1,7 @@
 import { connection } from "next/server";
 import { subscribe } from "@/lib/live";
+import { SSE_HEARTBEAT_MS, SSE_RETRY_MS } from "@/lib/timing";
 
-const HEARTBEAT_MS = 25_000; // keeps proxies from closing an idle stream
 
 /** Server-sent events: `change` whenever the Kaneo webhook fires (see LiveStatus). */
 export async function GET(request: Request) {
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
         } catch {
           close();
         }
-      }, HEARTBEAT_MS);
+      }, SSE_HEARTBEAT_MS);
       close = () => {
         clearInterval(heartbeat);
         unsubscribe();
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
         } catch {} // already closed
       };
       request.signal.addEventListener("abort", close);
-      send("retry: 5000\nevent: ready\ndata: {}\n\n");
+      send(`retry: ${SSE_RETRY_MS}\nevent: ready\ndata: {}\n\n`);
     },
     cancel: () => close(),
   });

@@ -2,6 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { z } from "zod";
 import { env } from "@/lib/env";
+import { KANEO_REVALIDATE_SECONDS } from "@/lib/timing";
 import { getActivities, getAllTasks, getProjects, type KaneoActivity, type KaneoTask } from "./client";
 
 /** A student request, simplified from a Kaneo task. */
@@ -90,11 +91,11 @@ export const KANEO_CACHE_TAG = "kaneo";
 /**
  * All real student requests from every (non-excluded) project in the Kaneo workspace,
  * plus when they were fetched and how many came from each project.
- * Cached on the server for KANEO_REVALIDATE_SECONDS, so Kaneo is called at most that often.
+ * Cached on the server for KANEO_REVALIDATE_SECONDS (src/lib/timing.ts), so Kaneo is called at most that often.
  */
 export async function getStudentRequests() {
   "use cache";
-  cacheLife({ stale: 30, revalidate: env.KANEO_REVALIDATE_SECONDS, expire: 24 * 3600 });
+  cacheLife({ stale: 30, revalidate: KANEO_REVALIDATE_SECONDS, expire: 24 * 3600 });
   cacheTag(KANEO_CACHE_TAG);
 
   const projects = (await getProjects(env.KANEO_WORKSPACE_ID)).filter(

@@ -7,7 +7,6 @@ const schema = z.object({
   KANEO_API_TOKEN: z.string().min(1, "KANEO_API_TOKEN is required"),
   KANEO_WORKSPACE_ID: z.string().min(1, "KANEO_WORKSPACE_ID is required"),
   KANEO_EXCLUDE_PROJECTS: z.string().default("staging,test"),
-  KANEO_REVALIDATE_SECONDS: z.coerce.number().int().positive().default(60),
   KANEO_AI_USER_IDS: z.string().default(""),
   KANEO_TEST_MARKERS: z.string().default("b24fm1195,pentest,tes test"),
   /** Projects whose cards are the chatbot's requests (counted from CHATBOT_API_URL when it works). */

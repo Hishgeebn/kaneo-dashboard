@@ -1,5 +1,6 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
+import { CHATBOT_REVALIDATE_SECONDS } from "@/lib/timing";
 import { env } from "@/lib/env";
 import type { PeriodKey } from "@/lib/dashboard";
 import { chatbotDashboardSchema, type ChatbotDashboard } from "./schema";
@@ -15,7 +16,7 @@ export const chatbotConfigured = Boolean(env.CHATBOT_API_URL && env.CHATBOT_DASH
  */
 async function fetchChatbotDashboard(period: PeriodKey): Promise<ChatbotDashboard | "denied"> {
   "use cache";
-  cacheLife({ stale: 30, revalidate: 30, expire: 3600 });
+  cacheLife({ stale: 30, revalidate: CHATBOT_REVALIDATE_SECONDS, expire: 3600 });
   cacheTag(CHATBOT_CACHE_TAG);
 
   const url = `${env.CHATBOT_API_URL.replace(/\/+$/, "")}/api/v1/requests/dashboard/service?period=${period}`;
